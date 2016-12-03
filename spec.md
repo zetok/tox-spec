@@ -22,67 +22,78 @@ bytes (e.g. `32`), a number in bits (e.g. `7` bit), a choice of lengths (e.g.
 `4 | 16`), or an inclusive range (e.g. `[0, 100]`). Open ranges are denoted
 `[n,]` to mean a minimum length of `n` with no specified maximum length.
 
-## TODO: Goals and threat model
-
-This section should give an idea on what are the goals and non-goals of Tox, so
-that reader
-
--   understands what problems Tox intends to solve
-
--   can validate if they are addresed by this specification
-
--   can make better tradeoffs and decisions in his own reimplementation of the
-    protocol
+## Goals and threat model
 
 (TODO: this is just a placeholder; some more technical description should be
 given)
 
-What Tox Does:
+This section should give an idea on what are the goals and non-goals of Tox, so
+that reader:
 
--   Authentication: user's address is its public key, thus "adding friend"
-    actually means verifying key (false in case of toxme?); drawback is that
-    after being compromised you have to generate absolutely new identity; also
-    it complicates working with multiple devices; (TODO: how about some web of
-    trust, master keys and subkeys here?)
+-   understands what problems Tox intends to solve
 
--   End-to-end encryption: all the messages are encrypted via keys derived via
-    DH, thus keys are only known to sender and receiver and are never
-    transfered over network
+-   can validate if they are addressed by this specification
 
--   Forward secrecy (?): can be achieved by using ephemeral keys (TODO: how are
-    they used in the current protocol? is the problem actually solved?)
+-   can make better tradeoffs and decisions in his own reimplementation of the
+    protocol
 
--   Reliability:
+### What Tox Does
 
-    -   Tox is supposed to be fully decentralized network which doesn't depend
-        on any Single Point of Failure; this is achieved by using DHT, though
-        you still need an entry point;
+#### Authentication
 
-    -   Tox is supposed to work under (almost) any kind of NAT and firewall;
-        this is achieved by using hole-punching, UPnP and TCP-relays;
+User's address is its public key, thus "adding friend" actually means verifying
+key. Drawback is that after being compromised (secret key revealed) you have to
+generate a new identity.
 
-    -   Resistance to basic DoS and other poisoning.
+#### End-to-end encryption
 
--   (Near-)Zero-conf: end-user should be able to *just* use the messenger;
+All the messages are encrypted via keys derived via DH, thus keys are only
+known to sender and receiver and are never transferred over network
 
-What Tox Does NOT:
+##### Perfect forward secrecy
 
--   Tox does not care about anonymity; Unless TCP mode is used, participants
-    communicate directly to each other; One of the reasons for this is that
-    relaying real-time video is rather too costly (in terms of load) and also
-    means delays;
+Achieved by using ephemeral keys (TODO: how are they used in the current
+protocol? is the problem actually solved?)
 
-    -   Your IP Address is exposed to nodes in your friendlist; They can link
-        your ID directly to IP Address;
+#### Reliability
 
-    -   Temporary DHT nodes and onion tunnels are used to find friends, so that
-        your ID cannot be linked to your IP based solely on publicly available
-        data (TODO: i.e. data stored in DHT? what else is exposed?); Though
-        adversary intercepting traffic in large enough network segment
-        is (probably) able to perform some statistical-based attack; (TODO:
-        what problem it is supposed to solve? does it solve it? since we don't
-        care about anonymity, i can only think of prevention of some targeted
-        Denial-of-Service attacks)
+-   Tox is supposed to be fully distributed network which doesn't depend on any
+    Single Point of Failure. This is achieved by using DHT and direct (P2P)
+    connections between the peers in the network. Entry point is still
+    required. Process of connecting to the network is called `bootstrapping`.
+    Bootstrapping can and should be done using multiple entry points.
+
+-   Tox is supposed to work under (almost) any kind of NAT and firewall; this
+    is achieved by using hole-punching, UPnP and TCP-relays.
+
+-   Resistance to basic DoS and other poisoning.
+
+#### Zero-conf (easy-to-use)
+
+End-user should be able to use the messenger that ***Just Works***. Security
+that is too hard to use is useless.
+
+### What Tox Does NOT
+
+#### Anonymity
+
+Unless TCP mode is used, participants communicate directly to each other. One
+of the reasons for this is that relaying real-time video is rather too costly
+(in terms of load) and also means delays.
+
+Your IP Address is exposed to nodes in your friendlist. They can link your ID
+directly to IP Address.
+
+Temporary DHT nodes and onion tunnels are used to find friends, so that your ID
+cannot be linked to your IP based solely on publicly available data (TODO: i.e.
+data stored in DHT? what else is exposed?); Though adversary intercepting
+traffic in large enough network segment is (probably) able to perform some
+statistical-based attack; (TODO: what problem it is supposed to solve? does it
+solve it? since we don't care about anonymity, i can only think of prevention
+of some targeted Denial-of-Service attacks)
+
+In case where anonymity is a concern, Tox can be proxied over HTTP or SOCKS5
+proxy. Using the TCP-only mode is required for anonymity.
 
 ## Integers
 
